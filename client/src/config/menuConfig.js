@@ -12,7 +12,7 @@ export const adminFakultasMenu = [
 export const adminUniversitasMenu = [
   { title: "Home", url: "/adminuniversitas/dashboard", icon: Home },
   { title: "Laporan Peminjaman", url: "/adminuniversitas/laporan", icon: FileText },
-  { title: "Manage Gedung", url: "/adminuniversitas/gedung", icon: Building },
+  { title: "Kelola Gedung", url: "/adminuniversitas/gedung", icon: Building },
   { title: "Inbox", url: "#", icon: Inbox },
   { title: "Calendar", url: "#", icon: Calendar },
   { title: "Search", url: "#", icon: Search },

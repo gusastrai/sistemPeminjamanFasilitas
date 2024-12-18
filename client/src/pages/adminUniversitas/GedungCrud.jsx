@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -16,20 +16,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { gedungService } from "@/api/gedungApi";
 
 const GedungCrud = () => {
-  const [gedungList, setGedungList] = useState([
-    { id: 1, namaGedung: "RKBF" },
-    { id: 2, namaGedung: "Laboratorium Teknik" },
-  ]);
+  const [gedungList, setGedungList] = useState([]);
   const [selectedGedung, setSelectedGedung] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ namaGedung: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchGedungList();
+  }, []);
+
+  const fetchGedungList = async () => {
+    try {
+      setIsLoading(true);
+      const data = await gedungService.getAllGedung();
+      setGedungList(data);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to fetch gedung list");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAdd = () => {
     setSelectedGedung(null);
@@ -48,52 +63,58 @@ const GedungCrud = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedGedung) {
-      // Edit existing gedung
-      setGedungList(
-        gedungList.map((gedung) =>
-          gedung.id === selectedGedung.id
-            ? { ...gedung, namaGedung: formData.namaGedung }
-            : gedung
-        )
-      );
-    } else {
-      // Add new gedung
-      setGedungList([
-        ...gedungList,
-        { id: gedungList.length + 1, namaGedung: formData.namaGedung },
-      ]);
+    setError("");
+
+    try {
+      if (selectedGedung) {
+        await gedungService.updateGedung(selectedGedung.idGedung, formData);
+      } else {
+        await gedungService.createGedung(formData);
+      }
+      fetchGedungList();
+      setIsFormDialogOpen(false);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to save gedung");
     }
-    setIsFormDialogOpen(false);
   };
 
-  const handleConfirmDelete = () => {
-    setGedungList(gedungList.filter((gedung) => gedung.id !== selectedGedung.id));
-    setIsDeleteDialogOpen(false);
+  const handleConfirmDelete = async () => {
+    try {
+      await gedungService.deleteGedung(selectedGedung.idGedung);
+      fetchGedungList();
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to delete gedung");
+    }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="p-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Manage Gedung</CardTitle>
-          <Button onClick={handleAdd}>Add New Gedung</Button>
+          <CardTitle>Kelola Gedung</CardTitle>
+          <Button onClick={handleAdd}>Tambahkan Gedung Baru</Button>
         </CardHeader>
         <CardContent>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Nama Gedung</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {gedungList.map((gedung) => (
-                <TableRow key={gedung.id}>
-                  <TableCell>{gedung.id}</TableCell>
+                <TableRow key={gedung.idGedung}>
+                  <TableCell>{gedung.idGedung}</TableCell>
                   <TableCell>{gedung.namaGedung}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
@@ -108,7 +129,7 @@ const GedungCrud = () => {
                       size="sm"
                       onClick={() => handleDelete(gedung)}
                     >
-                      Delete
+                      Hapus
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -118,7 +139,6 @@ const GedungCrud = () => {
         </CardContent>
       </Card>
 
-      {/* Form Dialog */}
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -143,20 +163,18 @@ const GedungCrud = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">Simpan Perubahan</Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {selectedGedung?.namaGedung}? This
-              action cannot be undone.
+              Apakah anda yakin ingin menghapus {selectedGedung?.namaGedung}? Aksi ini tidak dapat dipulihkan.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -172,7 +190,7 @@ const GedungCrud = () => {
               variant="destructive"
               onClick={handleConfirmDelete}
             >
-              Delete
+              Hapus
             </Button>
           </DialogFooter>
         </DialogContent>
