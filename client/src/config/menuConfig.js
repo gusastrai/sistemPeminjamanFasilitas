@@ -21,7 +21,7 @@ export const adminUniversitasMenu = [
 
 export const userMenu = [
   { title: "Home", url: "/user/dashboard", icon: Home },
-  { title: "Inbox", url: "#", icon: Inbox },
+  { title: "Fasilitas", url: "/user/fasilitas", icon: Building },
   { title: "Calendar", url: "#", icon: Calendar },
   { title: "Search", url: "#", icon: Search },
   { title: "Settings", url: "#", icon: Settings },

@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import DashboardAdminFakultas from "./pages/adminFakultas/Dashboard";
 import DashboardAdminUniversitas from "./pages/adminUniversitas/Dashboard";
 import DashboardUser from "./pages/users/Dashboard";
+import FasilitasUser from "./pages/users/Fasilitas";
+import PengajuanRuanganUser from "./pages/users/PengajuanRuangan";
 import GedungCrud from "./pages/adminUniversitas/GedungCrud";
 import Layout from "./components/Layouts";
 
@@ -48,6 +50,8 @@ const App = () => {
         <Route path="/user" element={<Layout role="user" />}>
           <Route index element={<DashboardUser />} />
           <Route path="dashboard" element={<DashboardUser />} />
+          <Route path="fasilitas" element={<FasilitasUser />} />
+          <Route path="PengajuanRuangan/:idRuangan" element={<PengajuanRuanganUser />} />
         </Route>
       </Routes>
     </Router>
