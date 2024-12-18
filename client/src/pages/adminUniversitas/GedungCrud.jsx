@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -19,7 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { gedungService } from "@/api/gedungApi";
+import { gedungService } from "@/api/GedungApi";
+import { Eye } from "lucide-react"; 
 
 const GedungCrud = () => {
   const [gedungList, setGedungList] = useState([]);
@@ -29,6 +31,7 @@ const GedungCrud = () => {
   const [formData, setFormData] = useState({ namaGedung: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchGedungList();
@@ -90,6 +93,10 @@ const GedungCrud = () => {
     }
   };
 
+  const handleDetail = (gedungId) => {
+    navigate(`/adminuniversitas/gedung/${gedungId}/ruangan`);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -106,17 +113,25 @@ const GedungCrud = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>No</TableHead>
                 <TableHead>Nama Gedung</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {gedungList.map((gedung) => (
+              {gedungList.map((gedung, index) => (
                 <TableRow key={gedung.idGedung}>
-                  <TableCell>{gedung.idGedung}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{gedung.namaGedung}</TableCell>
                   <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDetail(gedung.idGedung)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Detail
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -174,7 +189,8 @@ const GedungCrud = () => {
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogDescription>
-              Apakah anda yakin ingin menghapus {selectedGedung?.namaGedung}? Aksi ini tidak dapat dipulihkan.
+              Apakah anda yakin ingin menghapus {selectedGedung?.namaGedung}?
+              Aksi ini tidak dapat dipulihkan.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
