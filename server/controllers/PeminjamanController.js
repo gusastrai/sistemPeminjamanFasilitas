@@ -1,32 +1,32 @@
-const { PeminjamanRuangan } = require("../models");
+const { stat } = require("fs");
+const { PeminjamanRuangan, Peminjaman, Dokumen, Ruangan } = require("../models");
 const path = require("path");
 
 const PeminjamanController = {
   createPeminjamanRuangan: async (req, res) => {
     try {
-      const { tanggal, waktuMulai, waktuSelesai } = req.body;
-      const gambar = req.file;  // Ambil gambar yang diunggah
-
-      if (!tanggal || !waktuMulai || !waktuSelesai || !gambar) {
-        return res.status(400).json({ message: "Semua kolom harus diisi!" });
-      }
-
-      // Simpan gambar dan ambil path-nya
-      const gambarPath = path.join(__dirname, "..", "uploads", gambar.filename);
-
-      // Simpan pengajuan peminjaman ke database
-      const peminjaman = await PeminjamanRuangan.create({
-        idRuangan: req.params.idRuangan,
-        tanggal,
-        waktuMulai,
-        waktuSelesai,
-        gambarPath, // Menyimpan path gambar di database
+      const { idUser, judulPeminjaman, tanggalSelesai, tanggalPeminjaman, idRuangan } = req.body;
+      const ruangan = await Ruangan.findByPk(idRuangan);
+      const peminjaman = await Peminjaman.create({
+        userId: idUser,
+        judulPeminjaman: judulPeminjaman,
+        tanggalPeminjaman: tanggalPeminjaman,
+        tanggalSelesai: tanggalSelesai,
+        totalSewa: ruangan.hargaSewa,
+      });
+      const lastPeminjaman = await Peminjaman.findOne({
+        order: [['idPeminjaman', 'DESC']],
+      });
+      const peminjamanRuangan = await PeminjamanRuangan.create({
+        ruanganId: idRuangan,
+        peminjamanId: lastPeminjaman.idPeminjaman,
       });
 
-      res.status(201).json({ message: "Peminjaman berhasil diajukan", peminjaman });
+
+      res.status(201).json({ message: "Peminjaman berhasil diajukan", data: req.body });
     } catch (error) {
       console.error("Error creating peminjaman:", error);
-      res.status(500).json({ message: "Terjadi kesalahan saat memproses peminjaman" });
+      res.status(500).json({ message: error });
     }
   },
 };
