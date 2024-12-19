@@ -17,13 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    waktuMulai: {
-      type: DataTypes.TIME,
+    tanggalSelesai: {
+      type: DataTypes.DATE,
       allowNull: false,
-    },
-    waktuSelesai: {
-      type: DataTypes.TIME,
-      allowNull: true,
     },
     totalSewa: {
       type: DataTypes.STRING,
