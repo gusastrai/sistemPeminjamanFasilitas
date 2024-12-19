@@ -1,11 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
-const peminjamanController = require("../controllers/PeminjamanController");
+import express from "express";
+import multer from "multer";
+import peminjamanController from "../controllers/PeminjamanController.js";
 
+const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 // Get all gedung
-router.post("/:idRuangan",upload.single('gambar'), peminjamanController.createPeminjamanRuangan);
-
-
-module.exports = router;
+router.post("/:idRuangan", upload.single('gambar'), peminjamanController.createPeminjamanRuangan);
+router.post("/:idBarang", upload.single('lampiran'), peminjamanController.createPeminjamanBarang);
+export default router;

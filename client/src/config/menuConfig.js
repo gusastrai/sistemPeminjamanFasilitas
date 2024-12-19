@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings, CheckSquare, FileText, Building } from "lucide-react";
+import { Calendar, Home, Inbox, Search, Settings, CheckSquare, FileText, Building, Box } from "lucide-react";
 
 export const adminFakultasMenu = [
   { title: "Home", url: "/adminfakultas/dashboard", icon: Home },
@@ -22,7 +22,7 @@ export const adminUniversitasMenu = [
 export const userMenu = [
   { title: "Home", url: "/user/dashboard", icon: Home },
   { title: "Fasilitas", url: "/user/fasilitas", icon: Building },
-  { title: "Calendar", url: "#", icon: Calendar },
+  { title: "Barang", url: "/user/barang", icon: Box },
   { title: "Search", url: "#", icon: Search },
   { title: "Settings", url: "#", icon: Settings },
 ];

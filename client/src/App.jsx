@@ -7,7 +7,9 @@ import DashboardAdminFakultas from "./pages/adminFakultas/Dashboard";
 import DashboardAdminUniversitas from "./pages/adminUniversitas/Dashboard";
 import DashboardUser from "./pages/users/Dashboard";
 import FasilitasUser from "./pages/users/Fasilitas";
+import BarangUser from "./pages/users/Barang";
 import PengajuanRuanganUser from "./pages/users/PengajuanRuangan";
+import PengajuanBarangUser from "./pages/users/PengajuanBarang";
 import GedungCrud from "./pages/adminUniversitas/GedungCrud";
 import RuanganCrud from "./pages/adminUniversitas/RuanganCrud";
 import UserManagement from "./pages/adminUniversitas/UserManagement";
@@ -57,7 +59,9 @@ const App = () => {
           <Route index element={<DashboardUser />} />
           <Route path="dashboard" element={<DashboardUser />} />
           <Route path="fasilitas" element={<FasilitasUser />} />
+          <Route path="barang" element={<BarangUser />} />
           <Route path="PengajuanRuangan/:idRuangan" element={<PengajuanRuanganUser />} />
+          <Route path="PengajuanBarang/:idBarang" element={<PengajuanBarangUser />} />
         </Route>
       </Routes>
     </Router>
