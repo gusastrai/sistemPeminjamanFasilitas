@@ -9,8 +9,13 @@ import DashboardUser from "./pages/users/Dashboard";
 import FasilitasUser from "./pages/users/Fasilitas";
 import PengajuanRuanganUser from "./pages/users/PengajuanRuangan";
 import GedungCrud from "./pages/adminUniversitas/GedungCrud";
+import GedungCrudFakultas from "./pages/adminfakultas/GedungCrud";
+import UserManagementFakultas from "./pages/adminFakultas/UserManagement";
+import BarangCrud from "./pages/adminFakultas/BarangCrud";
 import RuanganCrud from "./pages/adminUniversitas/RuanganCrud";
 import UserManagement from "./pages/adminUniversitas/UserManagement";
+import AdminManagement from "./pages/adminUniversitas/AdminManagement";
+import BarangCrudUniversitas from "./pages/adminuniversitas/BarangCrud";
 import Layout from "./components/Layouts";
 
 const App = () => {
@@ -40,6 +45,13 @@ const App = () => {
           <Route index element={<DashboardAdminFakultas />} />
           <Route path="dashboard" element={<DashboardAdminFakultas />} />
           <Route path="persetujuan" element={<div>Persetujuan Peminjaman</div>} />
+
+          <Route path="gedung" element={<GedungCrudFakultas />} />
+          <Route path="gedung/:id/ruangan" element={<RuanganCrud />} /> 
+
+          <Route path="users" element={<UserManagementFakultas />} />
+
+          <Route path="barang" element={<BarangCrud />} />
         </Route>
 
         <Route path="/adminuniversitas" element={<Layout role="admin universitas" />}>
@@ -51,6 +63,9 @@ const App = () => {
           <Route path="gedung/:id/ruangan" element={<RuanganCrud />} /> 
 
           <Route path="users" element={<UserManagement />} />
+          <Route path="admins" element={<AdminManagement />} />
+
+          <Route path="barang" element={<BarangCrudUniversitas />} /> 
         </Route>
 
         <Route path="/user" element={<Layout role="user" />}>

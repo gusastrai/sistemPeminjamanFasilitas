@@ -4,9 +4,11 @@ const cors = require("cors");
 const db = require("./models");
 const authRoutes = require("./routes/Auth");
 const gedungRoutes = require("./routes/Gedung");
-const ruanganRoutes = require("./routes/Ruangan"); // Add this line
+const ruanganRoutes = require("./routes/Ruangan"); 
 const userManagementRoutes = require("./routes/UserManagement");
 const peminjamanRoute = require("./routes/Peminjaman");
+const adminManagementRoutes = require("./routes/AdminManagement");
+const barangRoutes = require("./routes/Barang");
 require("dotenv").config();
 
 
@@ -18,6 +20,9 @@ app.use("/gedung", gedungRoutes);
 app.use("/ruangan", ruanganRoutes); // Add this line
 app.use("/users", userManagementRoutes);
 app.use("/peminjaman", peminjamanRoute); // Add this line
+app.use("/admins", adminManagementRoutes);
+app.use("/barang", barangRoutes);
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
