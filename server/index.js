@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const app = express();
 const cors = require("cors");
 const db = require("./models");
@@ -22,6 +23,7 @@ app.use("/users", userManagementRoutes);
 app.use("/peminjaman", peminjamanRoute); // Add this line
 app.use("/admins", adminManagementRoutes);
 app.use("/barang", barangRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
   res.send("Hello World");

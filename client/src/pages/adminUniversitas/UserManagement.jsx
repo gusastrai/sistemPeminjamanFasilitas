@@ -112,7 +112,7 @@ const UserManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Daftar Pengguna</CardTitle>
-        </CardHeader>
+        </CardHeader> 
         <CardContent>
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <Table>

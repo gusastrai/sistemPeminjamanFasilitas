@@ -1,11 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
+const upload = require("../middleware/upload");
 const peminjamanController = require("../controllers/PeminjamanController");
 
-const upload = multer({ dest: "uploads/" });
-// Get all gedung
-router.post("/:idRuangan",upload.single('gambar'), peminjamanController.createPeminjamanRuangan);
+// Create peminjaman
+router.post("/:idRuangan", upload.single("lampiran"), peminjamanController.createPeminjamanRuangan);
 
+// Get all peminjaman
+router.get("/all", peminjamanController.getAllPeminjaman);
+
+// Get peminjaman by user
+router.get("/user/:userId", peminjamanController.getPeminjamanByUser);
+
+// Get peminjaman by id
+router.get("/:id", peminjamanController.getPeminjamanById);
+
+// Approve peminjaman
+router.put("/:id/approve", peminjamanController.approvePeminjaman);
+
+// Reject peminjaman
+router.put("/:id/reject", peminjamanController.rejectPeminjaman);
 
 module.exports = router;
