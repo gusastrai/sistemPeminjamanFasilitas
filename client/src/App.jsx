@@ -6,14 +6,21 @@ import Register from "./pages/Register";
 import DashboardAdminFakultas from "./pages/adminFakultas/Dashboard";
 import DashboardAdminUniversitas from "./pages/adminUniversitas/Dashboard";
 import DashboardUser from "./pages/users/Dashboard";
-import FasilitasUser from "./pages/users/Fasilitas";
+import RuanganUser from "./pages/users/Ruangan";
 import BarangUser from "./pages/users/Barang";
 import PengajuanRuanganUser from "./pages/users/PengajuanRuangan";
 import PengajuanBarangUser from "./pages/users/PengajuanBarang";
 import GedungCrud from "./pages/adminUniversitas/GedungCrud";
+import GedungCrudFakultas from "./pages/adminfakultas/GedungCrud";
+import UserManagementFakultas from "./pages/adminFakultas/UserManagement";
+import PeminjamanRuangan from "./pages/adminFakultas/PeminjamanRuangan";
+import BarangCrud from "./pages/adminFakultas/BarangCrud";
 import RuanganCrud from "./pages/adminUniversitas/RuanganCrud";
 import UserManagement from "./pages/adminUniversitas/UserManagement";
+import AdminManagement from "./pages/adminUniversitas/AdminManagement";
+import BarangCrudUniversitas from "./pages/adminuniversitas/BarangCrud";
 import Layout from "./components/Layouts";
+import DetailPeminjamanRuangan from "./pages/adminFakultas/DetailPeminjamanRuangan";
 
 const App = () => {
   const [role, setRole] = useState(localStorage.getItem("role"));
@@ -41,7 +48,16 @@ const App = () => {
         <Route path="/adminfakultas" element={<Layout role="admin fakultas" />}>
           <Route index element={<DashboardAdminFakultas />} />
           <Route path="dashboard" element={<DashboardAdminFakultas />} />
-          <Route path="persetujuan" element={<div>Persetujuan Peminjaman</div>} />
+
+          <Route path="peminjamanruangan" element={<PeminjamanRuangan />} />
+          <Route path="peminjamanruangan/:id/detail" element={<DetailPeminjamanRuangan />} />
+
+          <Route path="gedung" element={<GedungCrudFakultas />} />
+          <Route path="gedung/:id/ruangan" element={<RuanganCrud />} /> 
+
+          <Route path="users" element={<UserManagementFakultas />} />
+
+          <Route path="barang" element={<BarangCrud />} />
         </Route>
 
         <Route path="/adminuniversitas" element={<Layout role="admin universitas" />}>
@@ -53,12 +69,15 @@ const App = () => {
           <Route path="gedung/:id/ruangan" element={<RuanganCrud />} /> 
 
           <Route path="users" element={<UserManagement />} />
+          <Route path="admins" element={<AdminManagement />} />
+
+          <Route path="barang" element={<BarangCrudUniversitas />} /> 
         </Route>
 
         <Route path="/user" element={<Layout role="user" />}>
           <Route index element={<DashboardUser />} />
           <Route path="dashboard" element={<DashboardUser />} />
-          <Route path="fasilitas" element={<FasilitasUser />} />
+          <Route path="ruangan" element={<RuanganUser />} />
           <Route path="barang" element={<BarangUser />} />
           <Route path="PengajuanRuangan/:idRuangan" element={<PengajuanRuanganUser />} />
           <Route path="PengajuanBarang/:idBarang" element={<PengajuanBarangUser />} />

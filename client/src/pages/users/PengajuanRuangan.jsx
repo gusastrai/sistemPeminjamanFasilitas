@@ -16,36 +16,44 @@ import { cn } from "@/lib/utils";
 import { peminjamanService } from "@/api/PeminjamanApi";
 
 const PengajuanRuanganUser = () => {
-  const { idRuangan } = useParams(); // Get the idRuangan from URL params
-  const [ tanggalPeminjaman, settanggalPeminjaman] = useState(null);
-  const [ tanggalSelesai, settanggalSelesai] = useState(null);
-  const [ lampiran, setLampiran] = useState(null);
-  const [ judulPeminjaman, setJudulPeminjaman] = useState(""); // Add state for 'judulPeminjaman'
+  const { idRuangan } = useParams(); 
+  const [formData, setFormData] = useState({
+    judulPeminjaman: "",
+    tanggalPeminjaman: null,
+    tanggalSelesai: null,
+    lampiran: null
+  });
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({...formData, lampiran: file});
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate input fields
     if (
-      !judulPeminjaman ||
-      !tanggalPeminjaman ||
-      !tanggalSelesai ||
-      !lampiran
+      !formData.judulPeminjaman ||
+      !formData.tanggalPeminjaman ||
+      !formData.tanggalSelesai ||
+      !formData.lampiran
     ) {
       alert("Semua kolom harus diisi!");
       return;
     }
 
-    // Prepare FormData to send as the request body
-    const formData = new FormData();
-    formData.append("judulPeminjaman", judulPeminjaman);
-    formData.append("tanggalPeminjaman", tanggalPeminjaman ? format(tanggalPeminjaman, "yyyy-MM-dd") : ""); // Format tanggalPeminjaman to 'yyyy-MM-dd'
-    formData.append("tanggalSelesai", tanggalSelesai ? format(tanggalSelesai, "yyyy-MM-dd") : ""); // Format date to 'yyyy-MM-dd'
-    formData.append("lampiran", lampiran); // This should be the file object
+    const data = new FormData();
+    data.append("judulPeminjaman", formData.judulPeminjaman);
+    data.append("tanggalPeminjaman", formData.tanggalPeminjaman ? format(formData.tanggalPeminjaman, "yyyy-MM-dd") : ""); 
+    data.append("tanggalSelesai", formData.tanggalSelesai ? format(formData.tanggalSelesai, "yyyy-MM-dd") : ""); 
+    data.append("lampiran", formData.lampiran); 
     
     try {
-      // Send the request with idRuangan as part of the URL path
-      const response = await peminjamanService.createPeminjamanRuangan(idRuangan, formData);
+      const response = await peminjamanService.createPeminjamanRuangan(idRuangan, data);
       alert("Peminjaman berhasil diajukan!");
       console.log(response);
     } catch (error) {
@@ -63,15 +71,15 @@ const PengajuanRuanganUser = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} >
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="grid w-full max-w-sm items-center space-y-4">
               <Label htmlFor="judulPeminjaman">Alasan Peminjaman</Label>
               <Input
                 id="judulPeminjaman"
                 type="text"
                 placeholder="Keperluan Pengajuan"
-                value={judulPeminjaman}
-                onChange={(e) => setJudulPeminjaman(e.target.value)}
+                value={formData.judulPeminjaman}
+                onChange={(e) => setFormData({...formData, judulPeminjaman: e.target.value})}
               />
             </div>
             <div className="grid w-full max-w-sm items-center space-y-4">
@@ -79,8 +87,15 @@ const PengajuanRuanganUser = () => {
               <Input
                 id="lampiran"
                 type="file"
-                onChange={(e) => setLampiran(e.target.files?.[0] || null)}
+                onChange={handleFileChange}
               />
+              {previewUrl && (
+                <img 
+                  src={previewUrl} 
+                  alt="Preview"
+                  style={{maxWidth: "200px"}} 
+                />
+              )}
             </div>
 
             <div className="grid w-full max-w-sm items-center space-y-4">
@@ -91,18 +106,18 @@ const PengajuanRuanganUser = () => {
                     variant={"outline"}
                     className={cn(
                       "w-[240px] justify-start text-left font-normal",
-                      !tanggalPeminjaman && "text-muted-foreground"
+                      !formData.tanggalPeminjaman && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon />
-                    {tanggalPeminjaman ? format(tanggalPeminjaman, "PPP") : <span>Pilih Tanggal</span>}
+                    {formData.tanggalPeminjaman ? format(formData.tanggalPeminjaman, "PPP") : <span>Pilih Tanggal</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={tanggalPeminjaman}
-                    onSelect={settanggalPeminjaman}
+                    selected={formData.tanggalPeminjaman}
+                    onSelect={(date) => setFormData({...formData, tanggalPeminjaman: date})}
                     initialFocus
                   />
                 </PopoverContent>
@@ -116,24 +131,23 @@ const PengajuanRuanganUser = () => {
                     variant={"outline"}
                     className={cn(
                       "w-[240px] justify-start text-left font-normal",
-                      !tanggalSelesai && "text-muted-foreground"
+                      !formData.tanggalSelesai && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon />
-                    {tanggalSelesai ? format(tanggalSelesai, "PPP") : <span>Pilih Tanggal</span>}
+                    {formData.tanggalSelesai ? format(formData.tanggalSelesai, "PPP") : <span>Pilih Tanggal</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={tanggalSelesai}
-                    onSelect={settanggalSelesai}
+                    selected={formData.tanggalSelesai}
+                    onSelect={(date) => setFormData({...formData, tanggalSelesai: date})}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
-
 
             <Button type="submit" className="w-full mt-4 text-lg">
               Ajukan Peminjaman

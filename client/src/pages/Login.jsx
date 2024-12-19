@@ -93,12 +93,12 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter>
-          <p className="text-gray-600 flex gap-1">
+          {/* <p className="text-gray-600 flex gap-1">
             Belum punya akun?{" "}
             <Link to="/register" className="text-blue-500 hover:underline">
               Register
             </Link>
-          </p>
+          </p> */}
         </CardFooter>
       </Card>
     </div>

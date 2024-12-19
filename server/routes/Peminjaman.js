@@ -3,8 +3,25 @@ import multer from "multer";
 import peminjamanController from "../controllers/PeminjamanController.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
-// Get all gedung
-router.post("/:idRuangan", upload.single('gambar'), peminjamanController.createPeminjamanRuangan);
-router.post("/:idBarang", upload.single('lampiran'), peminjamanController.createPeminjamanBarang);
-export default router;
+const upload = require("../middleware/upload");
+const peminjamanController = require("../controllers/PeminjamanController");
+
+// Create peminjaman
+router.post("/:idRuangan", upload.single("lampiran"), peminjamanController.createPeminjamanRuangan);
+
+// Get all peminjaman
+router.get("/all", peminjamanController.getAllPeminjaman);
+
+// Get peminjaman by user
+router.get("/user/:userId", peminjamanController.getPeminjamanByUser);
+
+// Get peminjaman by id
+router.get("/:id", peminjamanController.getPeminjamanById);
+
+// Approve peminjaman
+router.put("/:id/approve", peminjamanController.approvePeminjaman);
+
+// Reject peminjaman
+router.put("/:id/reject", peminjamanController.rejectPeminjaman);
+
+module.exports = router;

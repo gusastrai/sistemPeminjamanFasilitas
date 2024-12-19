@@ -1,59 +1,189 @@
-const { stat } = require("fs");
-const { PeminjamanRuangan, Peminjaman, Dokumen, Ruangan,Barang } = require("../models");
+const { PeminjamanRuangan, Peminjaman, Dokumen, Ruangan, User } = require("../models");
 const path = require("path");
+const fs = require("fs");
 
 const PeminjamanController = {
   createPeminjamanRuangan: async (req, res) => {
     try {
-      const { idUser, judulPeminjaman, tanggalSelesai, tanggalPeminjaman, idRuangan } = req.body;
+      if (!req.file) {
+        return res.status(400).json({ message: "File lampiran required" });
+      }
+  
+      const { idUser, judulPeminjaman, tanggalPeminjaman, tanggalSelesai } = req.body;
+      const idRuangan = req.params.idRuangan;
+  
+      const uploadDir = path.join(__dirname, '../uploads');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+  
       const ruangan = await Ruangan.findByPk(idRuangan);
+      
       const peminjaman = await Peminjaman.create({
         userId: idUser,
-        judulPeminjaman: judulPeminjaman,
-        tanggalPeminjaman: tanggalPeminjaman,
-        tanggalSelesai: tanggalSelesai,
+        judulPeminjaman,
+        tanggalPeminjaman,
+        tanggalSelesai,
         totalSewa: ruangan.hargaSewa,
       });
-      const lastPeminjaman = await Peminjaman.findOne({
-        order: [['idPeminjaman', 'DESC']],
-      });
-      const peminjamanRuangan = await PeminjamanRuangan.create({
+  
+      await PeminjamanRuangan.create({
         ruanganId: idRuangan,
-        peminjamanId: lastPeminjaman.idPeminjaman,
+        peminjamanId: peminjaman.idPeminjaman,
       });
-
-
-      res.status(201).json({ message: "Peminjaman berhasil diajukan", data: req.body });
+  
+      const fileUrl = `/uploads/${req.file.filename}`;
+      const dokumen = await Dokumen.create({
+        peminjamanId: peminjaman.idPeminjaman,
+        lampiran: fileUrl,
+      });
+  
+      res.status(201).json({
+        message: "Peminjaman berhasil diajukan",
+        data: { peminjaman, dokumen }
+      });
+  
     } catch (error) {
-      console.error("Error creating peminjaman:", error);
-      res.status(500).json({ message: error });
+      console.error("Error:", error);
+      res.status(500).json({ 
+        message: "Internal server error",
+        error: error.message 
+      });
     }
   },
-  createPeminjamanBarang: async (req, res) => {
+
+  getPeminjamanByUser: async (req, res) => {
     try {
-      const { idUser, judulPeminjaman, tanggalSelesai, tanggalPeminjaman, idRuangan ,jumlah} = req.body;
-      const barang = await Barang.findByPk(idBarang);
-      const peminjaman = await Peminjaman.create({
-        userId: idUser,
-        judulPeminjaman: judulPeminjaman,
-        tanggalPeminjaman: tanggalPeminjaman,
-        tanggalSelesai: tanggalSelesai,
-        totalSewa: jumlah * barang.hargaSewa,
-      });
-      const lastPeminjaman = await Peminjaman.findOne({
-        order: [['idPeminjaman', 'DESC']],
-      });
-      const peminjamanBarang = await PeminjamanBarang.create({
-        barangId: idRuangan,
-        peminjamanId: lastPeminjaman.idPeminjaman,
-        jumlahPeminjaman: jumlah,
+      const { userId } = req.params;
+      const peminjamans = await Peminjaman.findAll({
+        where: { userId },
+        include: [
+          {
+            model: PeminjamanRuangan,
+            as: "peminjamanRuangan",
+            include: [
+              {
+                model: Ruangan,
+                as: "ruangan",
+              },
+            ],
+          },
+          {
+            model: Dokumen,
+            as: "dokumen",
+          },
+        ],
       });
 
-
-      res.status(201).json({ message: "Peminjaman berhasil diajukan", data: req.body });
+      res.status(200).json(peminjamans);
     } catch (error) {
-      console.error("Error creating peminjaman:", error);
-      res.status(500).json({ message: error });
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  getAllPeminjaman: async (req, res) => {
+    try {
+      const peminjamans = await Peminjaman.findAll({
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["nama", "nomorInduk", "email"]
+          },
+          {
+            model: PeminjamanRuangan,
+            as: "peminjamanRuangan",
+            include: [
+              {
+                model: Ruangan,
+                as: "ruangan"
+              }
+            ]
+          },
+          {
+            model: Dokumen,
+            as: "dokumen"
+          }
+        ]
+      });
+
+      res.status(200).json(peminjamans);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  getPeminjamanById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const peminjaman = await Peminjaman.findByPk(id, {
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["nama", "nomorInduk", "email"]
+          },
+          {
+            model: PeminjamanRuangan,
+            as: "peminjamanRuangan",
+            include: [
+              {
+                model: Ruangan,
+                as: "ruangan"
+              }
+            ]
+          },
+          {
+            model: Dokumen,
+            as: "dokumen"
+          }
+        ]
+      });
+
+      if (!peminjaman) {
+        return res.status(404).json({ message: "Peminjaman not found" });
+      }
+
+      res.status(200).json(peminjaman);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  approvePeminjaman: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const peminjaman = await Peminjaman.findByPk(id);
+
+      if (!peminjaman) {
+        return res.status(404).json({ message: "Peminjaman not found" });
+      }
+
+      await peminjaman.update({ status: true });
+      res.status(200).json({ message: "Peminjaman approved successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  rejectPeminjaman: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const peminjaman = await Peminjaman.findByPk(id);
+
+      if (!peminjaman) {
+        return res.status(404).json({ message: "Peminjaman not found" });
+      }
+
+      await peminjaman.destroy();
+      res.status(200).json({ message: "Peminjaman rejected and deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   },
 };

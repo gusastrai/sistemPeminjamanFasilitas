@@ -111,8 +111,8 @@ const UserManagement = () => {
     <div className="p-2">
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Pengguna</CardTitle>
-        </CardHeader> 
+          <CardTitle>Kelola Pengguna</CardTitle>
+        </CardHeader>
         <CardContent>
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <Table>
@@ -122,11 +122,11 @@ const UserManagement = () => {
                 <TableHead>Nomor Induk</TableHead>
                 <TableHead>Nama</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Status</TableHead>
+                {/* <TableHead>Status</TableHead> */}
                 <TableHead>Telepon</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Prodi</TableHead>
-                {/* <TableHead className="text-right">Aksi</TableHead> */}
+                <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,11 +136,13 @@ const UserManagement = () => {
                   <TableCell>{user.nomorInduk}</TableCell>
                   <TableCell>{user.nama}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{getStatusBadge(user.status)}</TableCell>
+                  {/* <TableCell>{getStatusBadge(user.status)}</TableCell> */}
                   <TableCell>{user.telepon}</TableCell>
-                  <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</TableCell>
+                  <TableCell>
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </TableCell>
                   <TableCell>{user.prodi?.namaProdi}</TableCell>
-                  {/* <TableCell className="text-right space-x-2">
+                  <TableCell className="text-right space-x-2">
                     {user.status === false && (
                       <>
                         <Button
@@ -172,7 +174,7 @@ const UserManagement = () => {
                         Hapus
                       </Button>
                     )}
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -180,7 +182,7 @@ const UserManagement = () => {
         </CardContent>
       </Card>
 
-      {/* <Dialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
+      <Dialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Konfirmasi Persetujuan</DialogTitle>
@@ -206,9 +208,9 @@ const UserManagement = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
 
-      {/* <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Konfirmasi Penolakan</DialogTitle>
@@ -230,9 +232,9 @@ const UserManagement = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
 
-      {/* <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Konfirmasi Hapus</DialogTitle>
@@ -258,7 +260,7 @@ const UserManagement = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
     </div>
   );
 };

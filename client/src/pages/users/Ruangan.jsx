@@ -21,7 +21,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { gedungService } from "@/api/gedungApi";
 import { ruanganService } from "@/api/RuanganApi";
 
-function Fasilitas() {
+function Ruangan() {
   const [gedungList, setGedungList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,22 +72,6 @@ function Fasilitas() {
 
   return (
     <>
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator>
-            <Slash />
-          </BreadcrumbSeparator>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#" style={{ fontWeight: "bold" }}>
-              Fasilitas
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Daftar Ruangan</CardTitle>
@@ -146,4 +130,4 @@ function Fasilitas() {
   );
 }
 
-export default Fasilitas;
+export default Ruangan;
