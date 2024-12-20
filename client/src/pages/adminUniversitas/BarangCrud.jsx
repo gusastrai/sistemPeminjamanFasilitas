@@ -122,7 +122,7 @@ const BarangCrud = () => {
               {barangList.map((barang, index) => (
                 <TableRow key={barang.idBarang}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{barang.namaBarang}</TableCell>
+                  <TableCell>{barang.namaBarang.charAt(0).toUpperCase() + barang.namaBarang.slice(1)}</TableCell>
                   <TableCell>{barang.jumlah}</TableCell>
                   <TableCell>{barang.hargaSewa ?? "Gratis"}</TableCell>
                   {/* <TableCell className="text-right space-x-2">

@@ -1,6 +1,7 @@
 const { User, Admin } = require("../models"); // Import model User dan Admin
 const bcrypt = require("bcrypt"); // Untuk membandingkan password
 const jwt = require("jsonwebtoken"); // Untuk generate token
+const { Op } = require("sequelize");
 
 // Secret key untuk JWT
 const SECRET_KEY = process.env.JWT_SECRET || "your_jwt_secret_key";
@@ -61,4 +62,68 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const register = async (req, res) => {
+  try {
+    const { nomorInduk, nama, email, password, telepon, role, prodiId } = req.body;
+
+    // Validate required fields
+    if (!nomorInduk || !nama || !email || !password || !telepon || !role) {
+      return res.status(400).json({ 
+        message: "All fields are required" 
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      where: { 
+        [Op.or]: [
+          { email },
+          { nomorInduk }
+        ]
+      } 
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email or nomor induk already exists"
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = await User.create({
+      nomorInduk,
+      nama,
+      email,
+      password: hashedPassword,
+      telepon,
+      role,
+      prodiId,
+      status: false // Pending approval
+    });
+
+    // Remove password from response
+    const userWithoutPassword = {
+      idUser: newUser.idUser,
+      nomorInduk: newUser.nomorInduk,
+      nama: newUser.nama,
+      email: newUser.email,
+      telepon: newUser.telepon,
+      role: newUser.role,
+      status: newUser.status
+    };
+
+    res.status(201).json({
+      message: "Registration successful, waiting for admin approval",
+      user: userWithoutPassword
+    });
+
+  } catch (error) {
+    console.error("Error in registration:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { login, register };

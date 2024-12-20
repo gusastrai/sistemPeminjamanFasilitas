@@ -48,6 +48,11 @@ module.exports = (sequelize, DataTypes) => {
       as: "peminjamanRuangan",
     });
 
+    Peminjaman.hasOne(models.PeminjamanBarang, {
+      foreignKey: "peminjamanId",
+      as: "peminjamanBarang",
+    });
+
     Peminjaman.belongsToMany(models.Barang, {
       through: models.PeminjamanBarang,
       foreignKey: "peminjamanId",

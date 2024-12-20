@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
-import { peminjamanRuanganService } from "@/api/PeminjamanRuanganApi";
+import { peminjamanBarangService } from "@/api/PeminjamanBarangApi";
 
 const DetailPeminjaman = () => {
   const { id } = useParams();
@@ -15,7 +15,7 @@ const DetailPeminjaman = () => {
 
   const fetchPeminjamanDetail = async () => {
     try {
-      const data = await peminjamanRuanganService.getPeminjamanRuanganById(id);
+      const data = await peminjamanBarangService.getPeminjamanBarangById(id);
       setPeminjaman(data);
     } catch (error) {
       console.error(error);
@@ -33,7 +33,7 @@ const DetailPeminjaman = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Detail Peminjaman Ruangan</CardTitle>
+        <CardTitle>Detail Peminjaman Barang</CardTitle>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="bg-gray-50 p-4 rounded-lg">
@@ -88,15 +88,22 @@ const DetailPeminjaman = () => {
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-lg mb-3">Informasi Ruangan</h3>
+          <h3 className="font-semibold text-lg mb-3">Informasi Barang</h3>
           <div className="grid grid-cols-2 gap-4">
             <p>
-              <span className="font-medium">Nama Ruangan:</span>{" "}
-              {peminjaman.peminjamanRuangan?.ruangan.namaRuangan}
+              <span className="font-medium">Nama Barang:</span>{" "}
+              {peminjaman.peminjamanBarang?.barang.namaBarang}
             </p>
             <p>
-              <span className="font-medium">Gedung:</span>{" "}
-              {peminjaman.peminjamanRuangan?.ruangan.gedung.namaGedung}
+              <span className="font-medium">Jumlah Dipinjam:</span>{" "}
+              {peminjaman.peminjamanBarang?.jumlahPeminjaman} unit
+            </p>
+            <p>
+              <span className="font-medium">Harga Sewa per Unit:</span>{" "}
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              }).format(peminjaman.peminjamanBarang?.barang.hargaSewa)}
             </p>
             <p>
               <span className="font-medium">Total Sewa:</span>{" "}

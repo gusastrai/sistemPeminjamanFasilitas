@@ -122,7 +122,7 @@ const UserManagement = () => {
                 <TableHead>Nomor Induk</TableHead>
                 <TableHead>Nama</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Status</TableHead>
+                {/* <TableHead>Status</TableHead> */}
                 <TableHead>Telepon</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Prodi</TableHead>
@@ -136,7 +136,7 @@ const UserManagement = () => {
                   <TableCell>{user.nomorInduk}</TableCell>
                   <TableCell>{user.nama}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{getStatusBadge(user.status)}</TableCell>
+                  {/* <TableCell>{getStatusBadge(user.status)}</TableCell> */}
                   <TableCell>{user.telepon}</TableCell>
                   <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</TableCell>
                   <TableCell>{user.prodi?.namaProdi}</TableCell>

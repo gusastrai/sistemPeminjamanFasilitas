@@ -1,16 +1,15 @@
-import express from "express";
-import multer from "multer";
-import peminjamanController from "../controllers/PeminjamanController.js";
-
+const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
-const peminjamanController = require("../controllers/PeminjamanController");
+const peminjamanController = require("../controllers/PeminjamanRuanganController");
 
 // Create peminjaman
 router.post("/:idRuangan", upload.single("lampiran"), peminjamanController.createPeminjamanRuangan);
 
 // Get all peminjaman
 router.get("/all", peminjamanController.getAllPeminjaman);
+
+router.get("/accepted", peminjamanController.getAllPeminjamanRuanganAcc);
 
 // Get peminjaman by user
 router.get("/user/:userId", peminjamanController.getPeminjamanByUser);

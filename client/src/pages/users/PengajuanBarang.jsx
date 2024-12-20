@@ -13,149 +13,204 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { peminjamanService } from "@/api/PeminjamanApi";
+import { peminjamanBarangService } from "@/api/PeminjamanBarangApi";
+import ErrorModal from "@/components/myComponents/ErrorModal";
+import SuccessModal from "@/components/myComponents/SuccessModal";
 
 const PengajuanBarangUser = () => {
-  const { idBarang } = useParams(); // Get the idBarang from URL params
-  const [ tanggalPeminjaman, settanggalPeminjaman] = useState(null);
-  const [ tanggalSelesai, settanggalSelesai] = useState(null);
-  const [ lampiran, setLampiran] = useState(null);
-  const [ judulPeminjaman, setJudulPeminjaman] = useState(""); // Add state for 'judulPeminjaman'
-  const [ jumlah, setJumlah] = useState(""); // Add state for 'judulPeminjaman'
+  const { idBarang } = useParams();
+  const [formData, setFormData] = useState({
+    judulPeminjaman: "",
+    jumlahPeminjaman: "",
+    tanggalPeminjaman: null,
+    tanggalSelesai: null,
+    lampiran: null,
+  });
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, lampiran: file });
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate input fields
     if (
-      !judulPeminjaman ||
-      !jumlah ||
-      !tanggalPeminjaman ||
-      !tanggalSelesai ||
-      !lampiran
+      !formData.judulPeminjaman ||
+      !formData.jumlahPeminjaman ||
+      !formData.tanggalPeminjaman ||
+      !formData.tanggalSelesai ||
+      !formData.lampiran
     ) {
-      alert("Semua kolom harus diisi!");
+      setErrorMessage("Semua kolom harus diisi!");
+      setIsErrorModalOpen(true);
       return;
     }
 
-    // Prepare FormData to send as the request body
-    const formData = new FormData();
-    formData.append("judulPeminjaman", judulPeminjaman);
-    formData.append("judulPeminjaman", jumlah);
-    formData.append("tanggalPeminjaman", tanggalPeminjaman ? format(tanggalPeminjaman, "yyyy-MM-dd") : ""); // Format tanggalPeminjaman to 'yyyy-MM-dd'
-    formData.append("tanggalSelesai", tanggalSelesai ? format(tanggalSelesai, "yyyy-MM-dd") : ""); // Format date to 'yyyy-MM-dd'
-    formData.append("lampiran", lampiran); // This should be the file object
-    
+    const data = new FormData();
+    data.append("judulPeminjaman", formData.judulPeminjaman);
+    data.append("jumlahPeminjaman", formData.jumlahPeminjaman);
+    data.append(
+      "tanggalPeminjaman",
+      formData.tanggalPeminjaman ? format(formData.tanggalPeminjaman, "yyyy-MM-dd") : ""
+    );
+    data.append(
+      "tanggalSelesai",
+      formData.tanggalSelesai ? format(formData.tanggalSelesai, "yyyy-MM-dd") : ""
+    );
+    data.append("lampiran", formData.lampiran);
+
     try {
-      // Send the request with idBarang as part of the URL path
-      const response = await peminjamanService.createPeminjamanBarang(idBarang, formData);
-      alert("Peminjaman berhasil diajukan!");
-      console.log(response);
+      await peminjamanBarangService.createPeminjamanBarang(idBarang, data);
+      setSuccessMessage("Peminjaman berhasil diajukan!");
+      setIsSuccessModalOpen(true);
+      setFormData({
+        judulPeminjaman: "",
+        jumlahPeminjaman: "",
+        tanggalPeminjaman: null,
+        tanggalSelesai: null,
+        lampiran: null,
+      });
+      setPreviewUrl("");
     } catch (error) {
-      alert("Terjadi kesalahan saat mengajukan peminjaman");
-      console.error(error);
+      setErrorMessage(error.response?.data?.message || "Terjadi kesalahan saat mengajukan peminjaman");
+      setIsErrorModalOpen(true);
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <Card className="w-full max-w-md p-4">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl">
-            Pengajuan Peminjaman Ruangan
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} encType="multipart/form-data" >
-            <div className="grid w-full max-w-sm items-center space-y-4">
-              <Label htmlFor="judulPeminjaman">Alasan Peminjaman</Label>
-              <Input
-                id="judulPeminjaman"
-                type="text"
-                placeholder="Keperluan Pengajuan"
-                value={judulPeminjaman}
-                onChange={(e) => setJudulPeminjaman(e.target.value)}
-              />
-            </div>
-            <div className="grid w-full max-w-sm items-center space-y-4">
-              <Label htmlFor="jumlah">Jumlah</Label>
-              <Input
-                id="jumlah"
-                type="number"
-                placeholder="Jumlah yang ingin dipinjam"
-                value={jumlah}
-                onChange={(e) => setJumlah(e.target.value)}
-              />
-            </div>
-            <div className="grid w-full max-w-sm items-center space-y-4">
-              <Label htmlFor="lampiran">Lampiran Pengajuan</Label>
-              <Input
-                id="lampiran"
-                type="file"
-                name="lampiran"
-                onChange={(e) => setLampiran(e.target.files?.[0] || null)}
-              />
-            </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Pengajuan Peminjaman Barang</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+          <div>
+            <Label htmlFor="judulPeminjaman">Tujuan Peminjaman</Label>
+            <Input
+              id="judulPeminjaman"
+              type="text"
+              placeholder="Masukkan tujuan peminjaman"
+              value={formData.judulPeminjaman}
+              onChange={(e) =>
+                setFormData({ ...formData, judulPeminjaman: e.target.value })
+              }
+            />
+          </div>
 
-            <div className="grid w-full max-w-sm items-center space-y-4">
-              <Label htmlFor="tanggal">Tanggal Peminjaman</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal",
-                      !tanggalPeminjaman && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {tanggalPeminjaman ? format(tanggalPeminjaman, "PPP") : <span>Pilih Tanggal</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={tanggalPeminjaman}
-                    onSelect={settanggalPeminjaman}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="grid w-full max-w-sm items-center space-y-4">
-              <Label htmlFor="tanggal">Tanggal Selesai</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal",
-                      !tanggalSelesai && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {tanggalSelesai ? format(tanggalSelesai, "PPP") : <span>Pilih Tanggal</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={tanggalSelesai}
-                    onSelect={settanggalSelesai}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div>
+            <Label htmlFor="jumlahPeminjaman">Jumlah Barang</Label>
+            <Input
+              id="jumlahPeminjaman"
+              type="number"
+              placeholder="Masukkan jumlah barang"
+              value={formData.jumlahPeminjaman}
+              onChange={(e) =>
+                setFormData({ ...formData, jumlahPeminjaman: e.target.value })
+              }
+            />
+          </div>
 
+          <div>
+            <Label htmlFor="tanggal-peminjaman">Tanggal Peminjaman</Label>
+            <Popover id="tanggal-peminjaman">
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start",
+                    !formData.tanggalPeminjaman && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formData.tanggalPeminjaman ? (
+                    format(formData.tanggalPeminjaman, "PPP")
+                  ) : (
+                    <span>Pilih Tanggal</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.tanggalPeminjaman}
+                  onSelect={(date) =>
+                    setFormData({ ...formData, tanggalPeminjaman: date })
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
 
-            <Button type="submit" className="w-full mt-4 text-lg">
-              Ajukan Peminjaman
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+          <div>
+            <Label htmlFor="tanggal-selesai">Tanggal Selesai</Label>
+            <Popover id="tanggal-selesai">
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start",
+                    !formData.tanggalSelesai && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formData.tanggalSelesai ? (
+                    format(formData.tanggalSelesai, "PPP")
+                  ) : (
+                    <span>Pilih Tanggal</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.tanggalSelesai}
+                  onSelect={(date) =>
+                    setFormData({ ...formData, tanggalSelesai: date })
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div>
+            <Label htmlFor="lampiran">Proposal Pengajuan</Label>
+            <Input id="lampiran" type="file" onChange={handleFileChange} />
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Preview"
+                style={{ maxWidth: "300px", marginTop: "10px" }}
+              />
+            )}
+          </div>
+
+          <Button type="submit">
+            Ajukan Peminjaman
+          </Button>
+        </form>
+      </CardContent>
+      <ErrorModal 
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        message={errorMessage}
+      />
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        message={successMessage}
+      />
+    </Card>
   );
 };
 

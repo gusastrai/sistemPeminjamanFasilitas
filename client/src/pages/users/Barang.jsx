@@ -55,7 +55,7 @@ function Barang() {
 
   return (
     <>
-      <Breadcrumb>
+      {/* <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -69,7 +69,7 @@ function Barang() {
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb> */}
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -91,14 +91,14 @@ function Barang() {
                   <TableHead>Jumlah tersedia</TableHead>
                   <TableHead>Harga Sewa</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Aksi</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {barangList.map((barang) => (
                   <TableRow key={barang.idBarang}>
                     <TableCell>{barang.idBarang}</TableCell>
-                    <TableCell>{barang.namaBarang}</TableCell>
+                    <TableCell>{barang.namaBarang.charAt(0).toUpperCase() + barang.namaBarang.slice(1)}</TableCell>
                     <TableCell>{barang.jumlah}</TableCell>
                     <TableCell>{barang.hargaSewa}</TableCell>
                     <TableCell>{getStatusText(barang.jumlah)}</TableCell>

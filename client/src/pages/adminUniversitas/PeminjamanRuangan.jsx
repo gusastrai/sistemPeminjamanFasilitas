@@ -103,7 +103,7 @@ const DaftarPeminjamanRuangan = () => {
                     size="sm"
                     onClick={() =>
                       navigate(
-                        `/adminfakultas/peminjamanruangan/${peminjaman.idPeminjaman}/detail`
+                        `/adminuniversitas/peminjamanruangan/${peminjaman.idPeminjaman}/detail`
                       )
                     }
                   >

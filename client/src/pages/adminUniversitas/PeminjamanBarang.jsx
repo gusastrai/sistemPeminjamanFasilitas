@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { CheckCircle, XCircle, FileText } from "lucide-react";
-import { peminjamanRuanganService } from "@/api/PeminjamanRuanganApi";
+import { peminjamanBarangService } from "@/api/PeminjamanBarangApi";
 
-const DaftarPeminjamanRuangan = () => {
+const PeminjamanBarang = () => {
   const [peminjamanList, setPeminjamanList] = useState([]);
   const [selectedPeminjaman, setSelectedPeminjaman] = useState(null);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
@@ -35,7 +35,7 @@ const DaftarPeminjamanRuangan = () => {
 
   const fetchPeminjaman = async () => {
     try {
-      const data = await peminjamanRuanganService.getAllPeminjaman();
+      const data = await peminjamanBarangService.getAllPeminjamanBarang();
       setPeminjamanList(data);
     } catch (error) {
       console.error(error);
@@ -44,7 +44,7 @@ const DaftarPeminjamanRuangan = () => {
 
   const handleApprove = async () => {
     try {
-      await peminjamanRuanganService.approvePeminjaman(
+      await peminjamanBarangService.approvePeminjamanBarang(
         selectedPeminjaman.idPeminjaman
       );
       setIsApproveDialogOpen(false);
@@ -56,7 +56,9 @@ const DaftarPeminjamanRuangan = () => {
 
   const handleReject = async () => {
     try {
-      await peminjamanRuanganService.rejectPeminjaman(selectedPeminjaman.idPeminjaman);
+      await peminjamanBarangService.rejectPeminjamanBarang(
+        selectedPeminjaman.idPeminjaman
+      );
       setIsRejectDialogOpen(false);
       fetchPeminjaman();
     } catch (error) {
@@ -67,7 +69,7 @@ const DaftarPeminjamanRuangan = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Daftar Peminjaman Ruangan</CardTitle>
+        <CardTitle>Daftar Peminjaman Barang</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -103,14 +105,14 @@ const DaftarPeminjamanRuangan = () => {
                     size="sm"
                     onClick={() =>
                       navigate(
-                        `/adminfakultas/peminjamanruangan/${peminjaman.idPeminjaman}/detail`
+                        `/adminuniversitas/peminjamanbarang/${peminjaman.idPeminjaman}/detail`
                       )
                     }
                   >
                     <FileText className="h-4 w-4 mr-1" />
                     Detail
                   </Button>
-                  {!peminjaman.status && (
+                  {/* {!peminjaman.status && (
                     <>
                       <Button
                         variant="outline"
@@ -137,7 +139,7 @@ const DaftarPeminjamanRuangan = () => {
                         Tolak
                       </Button>
                     </>
-                  )}
+                  )} */}
                 </TableCell>
               </TableRow>
             ))}
@@ -192,4 +194,4 @@ const DaftarPeminjamanRuangan = () => {
   );
 };
 
-export default DaftarPeminjamanRuangan;
+export default PeminjamanBarang;
